@@ -59,9 +59,3 @@ WordPress always renders the PHP templates.
 During development, `pnpm dev` starts Vite on `http://localhost:5173`. The constant in `wp-config.php` tells the theme to load `src/scripts/main.ts` from that server. The script imports `src/styles/main.css`, so Vite sends both JavaScript and styles directly to the browser and updates them with hot reload.
 
 For production, remove `WP_THEME_STARTER_VITE_DEV_SERVER` and run `pnpm build`. Vite compiles the assets into `assets/build/`, and WordPress loads the generated CSS and JavaScript through the Vite manifest. By default, the ready-to-use theme is placed in `release/wordpress-theme/`.
-
-For ACF Flexible Content, the layout name must match its partial filename:
-
-```text
-media_split → template-parts/flexible/media_split.php
-```
