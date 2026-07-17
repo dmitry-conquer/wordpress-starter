@@ -1,0 +1,63 @@
+@import "tailwindcss";
+/* @plugin '@tailwindcss/typography'; */
+
+/*
+ * Content sources - where Tailwind scans for classes
+ */
+@source "../../*.php";
+@source "../../inc/**/*.php";
+@source "../../template-parts/**/*.php";
+@source "../../templates/**/*.php";
+@source "../scripts/**/*.ts";
+
+/*
+ * Alpine.js x-cloak directive
+ * Hides elements until Alpine.js initializes
+ */
+[x-cloak] {
+  display: none !important;
+}
+
+/*
+ * Theme configuration using CSS variables
+ */
+@theme {
+  --color-primary: #3b82f6;
+  --color-secondary: #64748b;
+  --color-light: #fff;
+  --color-dark: #000;
+
+  /* Font families */
+  --font-base: "Open Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Playfair Display", ui-serif, Georgia, serif;
+}
+
+/*
+ * Base layer - HTML element defaults
+ */
+@layer base {
+  br {
+    @apply max-md:hidden!;
+  }
+  .always-br br {
+    @apply max-md:block!;
+  }
+}
+
+/*
+ * Components layer - Reusable component styles
+ */
+@layer components {
+}
+
+/*
+ * Utilities layer - Custom utility classes
+ */
+@layer utilities {
+}
+
+/* 
+* Taos animation library support
+*/
+@custom-variant taos (&.taos-init:where(:not(.taos-animate)));
+@source inline("!duration-[0ms] !delay-[0ms] taos:opacity-0 duration-700 taos:translate-y-15 delay-100 delay-200 delay-300 delay-400 delay-500");
