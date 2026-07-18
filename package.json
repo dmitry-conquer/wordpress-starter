@@ -1,7 +1,6 @@
 {
   "name": "wordpress-theme",
   "description": "Modern starter kit with Vite, Tailwind CSS v4, Alpine.js and TypeScript. WordPress theme starter template.",
-  "author": "MediaComponents",
   "packageManager": "pnpm@11.10.0",
   "private": true,
   "type": "module",
