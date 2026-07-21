@@ -1,5 +1,5 @@
 {
-  "name": "wordpress-theme",
+  "name": "wordpress-starter",
   "description": "Modern starter kit with Vite, Tailwind CSS v4, Alpine.js and TypeScript. WordPress theme starter template.",
   "packageManager": "pnpm@11.10.0",
   "private": true,
