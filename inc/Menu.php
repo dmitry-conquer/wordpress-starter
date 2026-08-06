@@ -19,7 +19,6 @@ final class Menu
   {
     register_nav_menus([
       "header_menu" => "Header menu",
-      "header_mobile_menu" => "Header mobile menu",
       "footer_menu" => "Footer mobile menu",
       "footer_locations_menu" => "Footer locations menu",
       "footer_quick_links_menu" => "Footer quick links menu",

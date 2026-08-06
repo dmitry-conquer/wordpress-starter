@@ -8,26 +8,32 @@ if (!defined("ABSPATH")) {
 
 final class DesktopMenuWalker extends \Walker_Nav_Menu
 {
+  private const ROW_D0 = "flex items-center";
+  private const ROW_D1 = "flex items-center transition-colors hover:bg-stone-50";
   private const LINK_D0 = "flex items-center px-4 py-2 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
   private const LINK_D0_ACTIVE = "flex items-center px-4 py-2 text-sm font-medium text-stone-900 transition-colors hover:text-stone-600 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
-  private const LINK_D0_PARENT = "flex items-center gap-1.5 px-4 py-2 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
+  private const LINK_D0_PARENT = "flex min-w-0 flex-1 items-center py-2 pl-4 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
   private const LINK_D1 = "flex items-center px-4 py-2.5 text-sm text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
   private const LINK_D1_ACTIVE = "relative flex items-center px-4 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
-  private const LINK_D1_PARENT = "flex items-center justify-between gap-6 px-4 py-2.5 text-sm text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
+  private const LINK_D1_PARENT = "flex min-w-0 flex-1 items-center py-2.5 pl-4 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
+  private const BUTTON_D0 = "mr-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
+  private const BUTTON_D1 = "mr-1 flex size-8 shrink-0 items-center justify-center text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
   private const ACTIVE_BAR_D1 = "absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-r bg-amber-500";
-  private const CHEVRON_DOWN = "h-4 w-4 shrink-0 text-stone-400 transition-transform duration-200";
-  private const CHEVRON_RIGHT = "h-4 w-4 shrink-0 text-stone-400 transition-transform duration-150";
+  private const CHEVRON_DOWN = "h-4 w-4 shrink-0 transition-transform duration-200";
+  private const CHEVRON_RIGHT = "h-4 w-4 shrink-0 transition-transform duration-150";
+
+  private string $submenu_id = "";
 
   public function start_lvl(&$output, $depth = 0, $args = null): void
   {
-    $state = $depth === 0 ? "open" : "subOpen";
     $motion =
       $depth === 0
         ? ' x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-1" class="absolute top-full left-0 z-50 pt-2"'
         : ' x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 translate-x-2" x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-2" class="absolute top-0 left-full z-50 pl-2"';
     $ul_class = $depth === 0 ? "min-w-44" : "min-w-48";
+    $id = $this->submenu_id ? ' id="' . esc_attr($this->submenu_id) . '"' : "";
 
-    $output .= '<div x-show="' . esc_attr($state) . '"' . $motion . ">\n";
+    $output .= "<div" . $id . ' x-show="open" x-cloak' . $motion . ">\n";
     $output .= '<ul role="list" class="' . esc_attr($ul_class . " rounded-xl bg-white py-1.5 shadow-xl ring-1 shadow-stone-900/8 ring-stone-100") . "\">\n";
   }
 
@@ -44,30 +50,24 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
     $has_children = in_array("menu-item-has-children", $classes, true);
     $title = $this->title($item, $args, $depth);
 
-    $output .= $this->open_li($depth, $has_children);
+    $output .= $this->open_li($has_children);
 
     if ($has_children) {
-      $state = $depth === 0 ? "open" : "subOpen";
-      $class = $depth === 0 ? self::LINK_D0_PARENT : self::LINK_D1_PARENT;
-      $icon = $depth === 0 ? $this->chevron_down() : $this->chevron_right();
-      $output .= $this->link(
-        $item,
-        $title,
-        $class,
-        $current,
-        [
-          ":aria-expanded" => $state . ".toString()",
-          "aria-haspopup" => "true",
-        ],
-        $icon,
-      );
+      $this->submenu_id = "desktop-submenu-" . (int) $item->ID;
+      $row_class = $depth === 0 ? self::ROW_D0 : self::ROW_D1;
+      $link_class = $depth === 0 ? self::LINK_D0_PARENT : self::LINK_D1_PARENT;
+
+      $output .= '<div class="' . esc_attr($row_class) . "\">\n";
+      $output .= $this->link($item, $title, $link_class, $current);
+      $output .= $this->toggle_button($title, $this->submenu_id, $depth);
+      $output .= "</div>\n";
       return;
     }
 
     $class = $depth === 0 ? ($active ? self::LINK_D0_ACTIVE : self::LINK_D0) : ($active ? self::LINK_D1_ACTIVE : self::LINK_D1);
     $prefix = $depth === 1 && $active ? $this->active_bar() : "";
 
-    $output .= $this->link($item, $title, $class, $current, [], "", $prefix);
+    $output .= $this->link($item, $title, $class, $current, $prefix);
   }
 
   public function end_el(&$output, $item, $depth = 0, $args = null): void
@@ -75,39 +75,27 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
     $output .= "</li>\n";
   }
 
-  private function open_li(int $depth, bool $has_children): string
+  private function open_li(bool $has_children): string
   {
     if (!$has_children) {
       return "<li>\n";
     }
 
-    $state = $depth === 0 ? "open" : "subOpen";
-    $escape = $depth === 0 ? '@keydown.escape="open = false"' : '@keydown.escape.stop="subOpen = false"';
-
-    return '<li x-data="{ ' .
-      $state .
-      ': false }" class="relative" @mouseenter="' .
-      $state .
-      ' = true" @mouseleave="' .
-      $state .
-      ' = false" @focusin="' .
-      $state .
-      ' = true" @focusout="$event.currentTarget.contains($event.relatedTarget) || (' .
-      $state .
-      ' = false)" ' .
-      $escape .
-      ">\n";
+    return '<li x-data="{ open: false }" class="relative"' .
+      ' @pointerenter="$event.pointerType !== \'touch\' && (open = true)"' .
+      ' @pointerleave="if ($event.pointerType !== \'touch\' && !$el.contains(document.activeElement)) open = false"' .
+      ' @click.outside="open = false"' .
+      ' @focusout="$event.currentTarget.contains($event.relatedTarget) || (open = false)"' .
+      ' @keydown.escape="if (open) { open = false; $refs.toggle.focus(); $event.stopPropagation() }">' .
+      "\n";
   }
 
-  private function link($item, string $title, string $class, bool $current, array $extra = [], string $suffix = "", string $prefix = ""): string
+  private function link($item, string $title, string $class, bool $current, string $prefix = ""): string
   {
-    $attrs = array_merge(
-      [
-        "href" => !empty($item->url) ? esc_url($item->url) : "#",
-        "class" => $class,
-      ],
-      $extra,
-    );
+    $attrs = [
+      "href" => !empty($item->url) ? esc_url($item->url) : "#",
+      "class" => $class,
+    ];
 
     if (!empty($item->target)) {
       $attrs["target"] = $item->target;
@@ -125,7 +113,23 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
       $attrs["aria-current"] = "page";
     }
 
-    return "<a" . $this->attrs($attrs) . ">" . $prefix . esc_html($title) . $suffix . "</a>\n";
+    return "<a" . $this->attrs($attrs) . ">" . $prefix . esc_html($title) . "</a>\n";
+  }
+
+  private function toggle_button(string $title, string $controls, int $depth): string
+  {
+    $class = $depth === 0 ? self::BUTTON_D0 : self::BUTTON_D1;
+    $icon = $depth === 0 ? $this->chevron_down() : $this->chevron_right();
+
+    return '<button x-ref="toggle" type="button" class="' .
+      esc_attr($class) .
+      '" :aria-expanded="open.toString()" aria-controls="' .
+      esc_attr($controls) .
+      '" aria-label="' .
+      esc_attr(sprintf("Toggle %s submenu", $title)) .
+      '" @click="open = !open">' .
+      $icon .
+      "</button>\n";
   }
 
   private function title($item, $args, int $depth): string
@@ -160,7 +164,7 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
   {
     return '<svg class="' .
       esc_attr(self::CHEVRON_RIGHT) .
-      '" :style="subOpen ? \'transform: translateX(2px)\' : \'\'" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">' .
+      '" :style="open ? \'transform: rotate(90deg)\' : \'\'" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">' .
       '<path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z" clip-rule="evenodd"/>' .
       "</svg>";
   }
