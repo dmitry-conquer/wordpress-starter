@@ -10,12 +10,6 @@ Install dependencies:
 pnpm install
 ```
 
-Add this constant to the local `wp-config.php` so the theme loads CSS and JavaScript from the Vite development server instead of `assets/build/`:
-
-```php
-define("WP_THEME_STARTER_VITE_DEV_SERVER", true);
-```
-
 Start Vite and open the WordPress site:
 
 ```bash
@@ -56,6 +50,8 @@ This creates the production theme at `release/custom-name/`.
 
 WordPress always renders the PHP templates.
 
-During development, `pnpm dev` starts Vite on `http://localhost:5173`. The constant in `wp-config.php` tells the theme to load `src/scripts/main.ts` from that server. The script imports `src/styles/main.css`, so Vite sends both JavaScript and styles directly to the browser and updates them with hot reload.
+During development, `pnpm dev` starts Vite on `http://localhost:5173`. When the working source theme detects that server, it loads `src/scripts/main.ts` from Vite automatically. The script imports `src/styles/main.css`, so Vite sends both JavaScript and styles directly to the browser and updates them with hot reload. When Vite is not running, it falls back to `assets/build/`.
 
-For production, remove `WP_THEME_STARTER_VITE_DEV_SERVER` and run `pnpm build`. Vite compiles the assets into `assets/build/`, and WordPress loads the generated CSS and JavaScript through the Vite manifest. By default, the ready-to-use theme is placed in `release/wordpress-starter/`.
+For a non-default Vite address, update the URL in `inc/Assets.php` and the Vite `server` settings in `vite.config.js`.
+
+For production, run `pnpm build`. Vite compiles the assets into `assets/build/`, and WordPress loads the generated CSS and JavaScript through the Vite manifest. The ready-to-use theme in `release/wordpress-starter/` does not contain the source-only Vite files, so it always uses the production build.

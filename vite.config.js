@@ -34,13 +34,10 @@ const wordpressNotice = {
       server.config.logger.info("");
       server.config.logger.info(`  ${color.bold}${color.green}Development server is ready${color.reset}`);
       server.config.logger.info("");
-      server.config.logger.info(`  ${color.bold}${color.yellow}1. Add to local wp-config.php:${color.reset}`);
-      server.config.logger.info(`  ${color.gray}define("WP_THEME_STARTER_VITE_DEV_SERVER", true);${color.reset}`);
-      server.config.logger.info("");
-      server.config.logger.info(`  ${color.bold}${color.yellow}2. Open your LocalWP site${color.reset}`);
+      server.config.logger.info(`  ${color.bold}${color.yellow}1. Open your LocalWP site${color.reset}`);
       server.config.logger.info(`  ${color.gray}Vite only serves CSS and JavaScript with hot reload.${color.reset}`);
       server.config.logger.info("");
-      server.config.logger.info(`  ${color.bold}${color.yellow}Production:${color.reset} remove the constant and run the ${color.bold}build script${color.reset}`);
+      server.config.logger.info(`  ${color.bold}${color.yellow}Production:${color.reset} run the ${color.bold}build script${color.reset}`);
       server.config.logger.info(`  ${color.gray}Ready theme: release/${color.reset}`);
       server.config.logger.info("");
     };

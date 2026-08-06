@@ -248,16 +248,16 @@ final class DevIndicator
           <span data-dev-value>Disabled</span>
         </li>
         <li data-dev-status="config" data-enabled="<?php echo $dev_enabled ? "true" : "false"; ?>">
-          <span>WP config</span>
-          <span data-dev-value><?php echo $dev_enabled ? "Enabled" : "Disabled"; ?></span>
+          <span>Theme assets</span>
+          <span data-dev-value><?php echo $dev_enabled ? "Vite" : "Build"; ?></span>
         </li>
       </ul>
       <details data-dev-indicator-help>
         <summary>Setup help</summary>
         <div data-dev-indicator-help-content>
           <p><b>Vite server:</b> run the project’s <code>dev</code> script with your package manager.</p>
-          <p><b>WP config:</b> add this line to the local <code>wp-config.php</code>:</p>
-          <code data-dev-indicator-config>define("WP_THEME_STARTER_VITE_DEV_SERVER", true);</code>
+          <p><b>Theme assets:</b> the source theme switches to Vite automatically when the server is running.</p>
+          <p>For a custom Vite URL, update the URL in <code>inc/Assets.php</code> and the Vite <code>server</code> settings.</p>
         </div>
       </details>
       <button type="button" data-dev-indicator-collapse aria-label="Collapse development notice" aria-expanded="true">−</button>
@@ -312,7 +312,7 @@ final class DevIndicator
         const setStatus = (name, enabled) => {
           const status = statuses[name];
           status.dataset.enabled = String(enabled);
-          status.querySelector("[data-dev-value]").textContent = enabled ? "Enabled" : "Disabled";
+          status.querySelector("[data-dev-value]").textContent = enabled ? "Vite" : "Build";
         };
 
         const update = (status, heading, running) => {
@@ -345,7 +345,7 @@ final class DevIndicator
           } else if (devEnabled) {
             update("config-only", "Development: Vite offline", running);
           } else if (running) {
-            update("server-only", "Development: config missing", running);
+            update("server-only", "Development: build assets", running);
           } else {
             update("disabled", "Development: disabled", running);
           }

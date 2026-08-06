@@ -9,6 +9,7 @@ if (!defined("ABSPATH")) {
 final class Assets
 {
   private const ENTRY = "src/scripts/main.ts";
+  private const DEFAULT_DEV_SERVER = "http://localhost:5173";
 
   public static function register(): void
   {
@@ -54,13 +55,39 @@ final class Assets
 
   public static function dev_server(): string
   {
-    if (!defined("WP_THEME_STARTER_VITE_DEV_SERVER") || !WP_THEME_STARTER_VITE_DEV_SERVER) {
+    // package-theme.mjs excludes these files from release/, so automatic
+    // detection can only run from the working source theme.
+    if (!self::is_source_theme() || !self::is_dev_server_running(self::DEFAULT_DEV_SERVER)) {
       return "";
     }
 
-    $url = is_string(WP_THEME_STARTER_VITE_DEV_SERVER) ? WP_THEME_STARTER_VITE_DEV_SERVER : "http://localhost:5173";
+    return self::DEFAULT_DEV_SERVER;
+  }
 
-    return untrailingslashit(esc_url_raw($url));
+  private static function is_source_theme(): bool
+  {
+    return is_readable(WP_THEME_STARTER_DIR . "/package.json") && is_readable(WP_THEME_STARTER_DIR . "/vite.config.js");
+  }
+
+  private static function is_dev_server_running(string $url): bool
+  {
+    static $checked = [];
+
+    if (array_key_exists($url, $checked)) {
+      return $checked[$url];
+    }
+
+    $response = wp_remote_get($url . "/__theme-dev-status", [
+      "timeout" => 0.5,
+      "redirection" => 0,
+    ]);
+
+    if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+      return $checked[$url] = false;
+    }
+
+    $payload = json_decode((string) wp_remote_retrieve_body($response), true);
+    return $checked[$url] = is_array($payload) && ($payload["status"] ?? "") === "ready" && ($payload["service"] ?? "") === "theme-vite-dev-server";
   }
 
   private static function manifest(): array
