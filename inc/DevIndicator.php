@@ -21,19 +21,17 @@ final class DevIndicator
       return;
     }
 
-    $configured_url = Assets::dev_server();
-    $dev_enabled = $configured_url !== "";
-    $dev_server = $dev_enabled ? $configured_url : self::DEFAULT_DEV_SERVER;
+    $dev_server = Assets::dev_server() ?: self::DEFAULT_DEV_SERVER;
     ?>
     <style>
       #theme-dev-indicator {
-        --indicator-color: #64748b;
+        --indicator-color: #dc2626;
         position: fixed;
         right: 16px;
         bottom: 16px;
         z-index: 2147483647;
-        width: min(440px, calc(100vw - 32px));
-        padding: 12px 40px 12px 14px;
+        width: min(360px, calc(100vw - 32px));
+        padding: 12px 14px;
         border: 1px solid #e7e5e4;
         border-radius: 8px;
         background: #fff;
@@ -50,40 +48,8 @@ final class DevIndicator
         --indicator-color: #16a34a;
       }
 
-      #theme-dev-indicator[data-status="server-only"] {
-        --indicator-color: #d97706;
-      }
-
-      #theme-dev-indicator[data-status="config-only"] {
-        --indicator-color: #dc2626;
-      }
-
       #theme-dev-indicator[data-status="disabled"] {
-        --indicator-color: #64748b;
-      }
-
-      #theme-dev-indicator[data-view="collapsed"] {
-        width: auto;
-        padding: 8px 42px 8px 10px;
-        border-radius: 999px;
-      }
-
-      #theme-dev-indicator[data-view="collapsed"] ul,
-      #theme-dev-indicator[data-view="collapsed"] [data-dev-indicator-help],
-      #theme-dev-indicator[data-view="collapsed"] [data-dev-indicator-title] {
-        display: none;
-      }
-
-      #theme-dev-indicator [data-dev-indicator-short] {
-        display: none;
-      }
-
-      #theme-dev-indicator[data-view="collapsed"] [data-dev-indicator-short] {
-        display: inline;
-      }
-
-      #theme-dev-indicator[data-view="collapsed"] strong {
-        margin: 0;
+        --indicator-color: #dc2626;
       }
 
       #theme-dev-indicator strong {
@@ -101,37 +67,6 @@ final class DevIndicator
         border-radius: 999px;
         background: var(--indicator-color);
         content: "";
-      }
-
-      #theme-dev-indicator ul {
-        display: grid;
-        gap: 4px;
-        margin: 8px 0 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      #theme-dev-indicator li {
-        display: grid;
-        grid-template-columns: 8px 1fr auto;
-        gap: 8px;
-        align-items: center;
-      }
-
-      #theme-dev-indicator li::before {
-        width: 6px;
-        height: 6px;
-        border-radius: 999px;
-        background: #dc2626;
-        content: "";
-      }
-
-      #theme-dev-indicator li[data-enabled="true"]::before {
-        background: #16a34a;
-      }
-
-      #theme-dev-indicator [data-dev-value] {
-        color: #78716c;
       }
 
       #theme-dev-indicator details {
@@ -201,57 +136,10 @@ final class DevIndicator
         overflow-wrap: anywhere;
       }
 
-      #theme-dev-indicator [data-dev-indicator-config] {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      #theme-dev-indicator [data-dev-indicator-collapse] {
-        position: absolute;
-        top: 8px;
-        right: 8px;
-        display: grid;
-        width: 26px;
-        height: 26px;
-        padding: 0;
-        border: 0;
-        border-radius: 6px;
-        background: transparent;
-        color: #a8a29e;
-        cursor: pointer;
-        font: 18px/1 ui-sans-serif, system-ui, sans-serif;
-        place-items: center;
-      }
-
-      #theme-dev-indicator[data-view="collapsed"] [data-dev-indicator-collapse] {
-        top: 50%;
-        transform: translateY(-50%);
-      }
-
-      #theme-dev-indicator [data-dev-indicator-collapse]:hover {
-        background: #f5f5f4;
-        color: #57534e;
-      }
-
-      #theme-dev-indicator [data-dev-indicator-collapse]:focus-visible {
-        outline: 2px solid var(--indicator-color);
-        outline-offset: 1px;
-      }
     </style>
 
-    <aside id="theme-dev-indicator" data-status="checking" data-view="expanded" aria-live="polite" hidden>
-      <strong><span data-dev-indicator-title>Development: checking</span><span data-dev-indicator-short>Dev</span></strong>
-      <ul>
-        <li data-dev-status="vite" data-enabled="false">
-          <span>Vite server</span>
-          <span data-dev-value>Disabled</span>
-        </li>
-        <li data-dev-status="config" data-enabled="<?php echo $dev_enabled ? "true" : "false"; ?>">
-          <span>Theme assets</span>
-          <span data-dev-value><?php echo $dev_enabled ? "Vite" : "Build"; ?></span>
-        </li>
-      </ul>
+    <aside id="theme-dev-indicator" data-status="disabled" aria-live="polite" hidden>
+      <strong><span data-dev-indicator-title>Development: disabled</span></strong>
       <details data-dev-indicator-help>
         <summary>Setup help</summary>
         <div data-dev-indicator-help-content>
@@ -260,66 +148,21 @@ final class DevIndicator
           <p>For a custom Vite URL, update the URL in <code>inc/Assets.php</code> and the Vite <code>server</code> settings.</p>
         </div>
       </details>
-      <button type="button" data-dev-indicator-collapse aria-label="Collapse development notice" aria-expanded="true">−</button>
     </aside>
 
     <script>
       (() => {
         const indicator = document.querySelector("#theme-dev-indicator");
         const title = indicator?.querySelector("[data-dev-indicator-title]");
-        const collapseButton = indicator?.querySelector("[data-dev-indicator-collapse]");
-        const statuses = {
-          vite: indicator?.querySelector('[data-dev-status="vite"]'),
-          config: indicator?.querySelector('[data-dev-status="config"]'),
-        };
-        const devEnabled = <?php echo wp_json_encode($dev_enabled); ?>;
         const devServer = <?php echo wp_json_encode($dev_server); ?>;
-        const storageKey = "wp-theme-starter-dev-indicator";
 
-        if (!indicator || !title || !collapseButton || Object.values(statuses).some(status => !status)) return;
+        if (!indicator || !title) return;
 
-        const readView = () => {
-          try {
-            return window.localStorage.getItem(storageKey);
-          } catch {
-            return null;
-          }
-        };
-
-        const saveView = view => {
-          try {
-            window.localStorage.setItem(storageKey, view);
-          } catch {}
-        };
-
-        const savedView = readView();
-        const setView = collapsed => {
-          indicator.dataset.view = collapsed ? "collapsed" : "expanded";
-          collapseButton.textContent = collapsed ? "+" : "−";
-          collapseButton.setAttribute("aria-label", collapsed ? "Expand development notice" : "Collapse development notice");
-          collapseButton.setAttribute("aria-expanded", String(!collapsed));
-        };
-
-        setView(savedView === "collapsed");
-        indicator.hidden = false;
-
-        collapseButton.addEventListener("click", () => {
-          const collapsed = indicator.dataset.view !== "collapsed";
-          setView(collapsed);
-          saveView(collapsed ? "collapsed" : "expanded");
-        });
-
-        const setStatus = (name, enabled) => {
-          const status = statuses[name];
-          status.dataset.enabled = String(enabled);
-          status.querySelector("[data-dev-value]").textContent = enabled ? "Vite" : "Build";
-        };
-
-        const update = (status, heading, running) => {
+        const update = running => {
+          const status = running ? "active" : "disabled";
           indicator.dataset.status = status;
-          title.textContent = heading;
-          setStatus("vite", running);
-          setStatus("config", devEnabled);
+          title.textContent = running ? "Development: active" : "Development: disabled";
+          indicator.hidden = running;
         };
 
         const checkServer = async () => {
@@ -340,15 +183,7 @@ final class DevIndicator
             window.clearTimeout(timeout);
           }
 
-          if (devEnabled && running) {
-            update("active", "Development: active", running);
-          } else if (devEnabled) {
-            update("config-only", "Development: Vite offline", running);
-          } else if (running) {
-            update("server-only", "Development: build assets", running);
-          } else {
-            update("disabled", "Development: disabled", running);
-          }
+          update(running);
         };
 
         checkServer();

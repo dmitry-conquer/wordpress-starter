@@ -34,8 +34,8 @@ const wordpressNotice = {
       server.config.logger.info("");
       server.config.logger.info(`  ${color.bold}${color.green}Development server is ready${color.reset}`);
       server.config.logger.info("");
-      server.config.logger.info(`  ${color.bold}${color.yellow}1. Open your LocalWP site${color.reset}`);
-      server.config.logger.info(`  ${color.gray}Vite only serves CSS and JavaScript with hot reload.${color.reset}`);
+      server.config.logger.info(`  ${color.bold}${color.yellow}Open your LocalWP site to see theme changes.${color.reset}`);
+      server.config.logger.info(`  ${color.gray}Vite hot-reloads CSS and JavaScript.${color.reset}`);
       server.config.logger.info("");
       server.config.logger.info(`  ${color.bold}${color.yellow}Production:${color.reset} run the ${color.bold}build script${color.reset}`);
       server.config.logger.info(`  ${color.gray}Ready theme: release/${color.reset}`);
