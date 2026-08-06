@@ -40,10 +40,6 @@ final class DevIndicator
         font: 12px/1.4 ui-sans-serif, system-ui, sans-serif;
       }
 
-      #theme-dev-indicator[hidden] {
-        display: none;
-      }
-
       #theme-dev-indicator[data-status="active"] {
         --indicator-color: #16a34a;
       }
@@ -52,11 +48,15 @@ final class DevIndicator
         --indicator-color: #dc2626;
       }
 
+      #theme-dev-indicator[data-collapsed="true"] {
+        width: auto;
+        padding: 6px 8px;
+      }
+
       #theme-dev-indicator strong {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 2px;
         font-size: 13px;
       }
 
@@ -69,10 +69,80 @@ final class DevIndicator
         content: "";
       }
 
+      #theme-dev-indicator [data-dev-indicator-short-title] {
+        display: none;
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-full-title] {
+        display: none;
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-short-title] {
+        display: inline;
+      }
+
       #theme-dev-indicator details {
         margin-top: 10px;
         border-top: 1px solid #e7e5e4;
         padding-top: 8px;
+      }
+
+      #theme-dev-indicator[data-status="active"] details,
+      #theme-dev-indicator[data-collapsed="true"] details {
+        display: none;
+      }
+
+      #theme-dev-indicator [data-dev-indicator-collapse] {
+        display: inline-grid;
+        width: 18px;
+        height: 18px;
+        margin-left: auto;
+        place-items: center;
+        border: 0;
+        border-radius: 3px;
+        background: transparent;
+        color: #a8a29e;
+        cursor: pointer;
+        font: inherit;
+      }
+
+      #theme-dev-indicator [data-dev-indicator-collapse]::before {
+        content: "−";
+        font-size: 16px;
+        line-height: 1;
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-collapse]::before {
+        content: "+";
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-collapse] {
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+        color: transparent;
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-collapse]::before {
+        display: none;
+      }
+
+      #theme-dev-indicator[data-collapsed="true"] [data-dev-indicator-collapse]:hover {
+        background: transparent;
+      }
+
+      #theme-dev-indicator [data-dev-indicator-collapse]:hover {
+        background: #f5f5f4;
+      }
+
+      #theme-dev-indicator [data-dev-indicator-collapse]:focus-visible {
+        outline: 2px solid var(--indicator-color);
+        outline-offset: 2px;
+      }
+
+      #theme-dev-indicator [data-dev-indicator-collapse]:disabled {
+        cursor: default;
       }
 
       #theme-dev-indicator summary {
@@ -138,8 +208,11 @@ final class DevIndicator
 
     </style>
 
-    <aside id="theme-dev-indicator" data-status="disabled" aria-live="polite" hidden>
-      <strong><span data-dev-indicator-title>Development: disabled</span></strong>
+    <aside id="theme-dev-indicator" data-status="disabled" aria-live="polite">
+      <strong>
+        <span data-dev-indicator-title><span data-dev-indicator-full-title>Development: disabled</span><span data-dev-indicator-short-title>Dev</span></span>
+        <button type="button" data-dev-indicator-collapse aria-label="Collapse development status" aria-expanded="true"></button>
+      </strong>
       <details data-dev-indicator-help>
         <summary>Setup help</summary>
         <div data-dev-indicator-help-content>
@@ -153,16 +226,51 @@ final class DevIndicator
     <script>
       (() => {
         const indicator = document.querySelector("#theme-dev-indicator");
-        const title = indicator?.querySelector("[data-dev-indicator-title]");
+        const title = indicator?.querySelector("[data-dev-indicator-full-title]");
+        const collapseButton = indicator?.querySelector("[data-dev-indicator-collapse]");
         const devServer = <?php echo wp_json_encode($dev_server); ?>;
+        const collapsedStorageKey = "theme-dev-indicator-collapsed";
+        let savedCollapsed = false;
 
-        if (!indicator || !title) return;
+        if (!indicator || !title || !collapseButton) return;
+
+        const setCollapsed = (collapsed, persist = true) => {
+          indicator.dataset.collapsed = String(collapsed);
+          collapseButton.setAttribute("aria-expanded", String(!collapsed));
+          collapseButton.setAttribute("aria-label", collapsed ? "Expand development status" : "Collapse development status");
+
+          if (!persist) return;
+
+          savedCollapsed = collapsed;
+          try {
+            window.localStorage.setItem(collapsedStorageKey, String(collapsed));
+          } catch {
+            // The indicator still works when storage is unavailable.
+          }
+        };
+
+        try {
+          savedCollapsed = window.localStorage.getItem(collapsedStorageKey) === "true";
+        } catch {
+          savedCollapsed = false;
+        }
+        setCollapsed(savedCollapsed, false);
+
+        collapseButton.addEventListener("click", () => {
+          if (indicator.dataset.locked === "true") return;
+          setCollapsed(indicator.dataset.collapsed !== "true");
+        });
 
         const update = running => {
           const status = running ? "active" : "disabled";
           indicator.dataset.status = status;
           title.textContent = running ? "Development: active" : "Development: disabled";
-          indicator.hidden = running;
+          indicator.dataset.locked = String(running);
+          collapseButton.disabled = running;
+          setCollapsed(running || savedCollapsed, false);
+          if (running) {
+            collapseButton.setAttribute("aria-label", "Development status is active");
+          }
         };
 
         const checkServer = async () => {
