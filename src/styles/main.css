@@ -37,10 +37,10 @@
  */
 @layer base {
   br {
-    @apply max-md:hidden!;
+    @apply max-lg:hidden!;
   }
   .always-br br {
-    @apply max-md:block!;
+    @apply max-lg:block!;
   }
 }
 
