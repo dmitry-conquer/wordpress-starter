@@ -37,9 +37,13 @@ require_once WP_THEME_STARTER_DIR . "/inc/Autoloader.php";
 // Initialize theme components
 Autoloader::register();
 Assets::register();
-DevIndicator::register();
 Setup::register();
 Editor::register();
 Menu::register();
 Shortcodes::register();
 Utils::register();
+
+// Show the development status indicator only in the source theme.
+if (is_readable(WP_THEME_STARTER_DIR . "/package.json") && is_readable(WP_THEME_STARTER_DIR . "/vite.config.js")) {
+  DevIndicator::register();
+}
