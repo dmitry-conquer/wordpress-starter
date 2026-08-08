@@ -18,6 +18,10 @@ function createIdentity(input) {
   const namespace = words.map(word => (word === word.toUpperCase() ? word : word[0].toUpperCase() + word.slice(1).toLowerCase())).join("_");
   const slug = words.map(word => word.toLowerCase()).join("-");
 
+  if (namespace.toLowerCase() === "namespace") {
+    throw new Error('The theme name "Namespace" is reserved by PHP.');
+  }
+
   if (slug === TEMPLATE_PACKAGE_NAME || slug === "wp-theme-starter") {
     throw new Error("This name conflicts with the starter theme identity. Choose a different name.");
   }
