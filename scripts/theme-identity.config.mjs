@@ -1,4 +1,4 @@
-export const STARTER_PACKAGE_NAME = "wordpress-starter";
+export const TEMPLATE_PACKAGE_NAME = "wordpress-starter";
 
 export const replacements = [
   {
@@ -40,7 +40,7 @@ export const replacements = [
     files: ["functions.php"],
   },
   {
-    token: STARTER_PACKAGE_NAME,
+    token: TEMPLATE_PACKAGE_NAME,
     value: "slug",
     files: ["README.md", "package.json"],
   },
