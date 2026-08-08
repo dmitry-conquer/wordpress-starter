@@ -10,7 +10,6 @@ export const replacements = [
       "inc/Autoloader.php",
       "inc/DesktopMenuWalker.php",
       "inc/DevIndicator.php",
-      "inc/Editor.php",
       "inc/Menu.php",
       "inc/MobileMenuWalker.php",
       "inc/Setup.php",
