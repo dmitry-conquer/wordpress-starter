@@ -10,6 +10,18 @@ Install dependencies:
 pnpm install
 ```
 
+On the first install, enter a theme name of up to 80 Latin letters with single spaces, for example `Pride AC`. The initializer derives the slug, PHP namespace, and constant prefix, then updates only its explicit file allowlist. You can also run it directly:
+
+```bash
+pnpm init-theme
+```
+
+To preview the files it would update without changing anything:
+
+```bash
+pnpm init-theme -- --dry-run
+```
+
 Start Vite and open the WordPress site:
 
 ```bash

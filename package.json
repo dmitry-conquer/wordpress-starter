@@ -5,6 +5,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "postinstall": "node scripts/initialize-theme.mjs --postinstall",
+    "init-theme": "node scripts/initialize-theme.mjs",
     "dev": "vite",
     "host": "vite --host",
     "build": "tsc --noEmit && vite build && node scripts/package-theme.mjs",
