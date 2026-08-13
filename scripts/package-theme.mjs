@@ -8,6 +8,7 @@ const MANIFEST_PATH = path.join(ROOT_DIR, "assets", "build", ".vite", "manifest.
 
 const ROOT_EXCLUSIONS = new Set([
   ".claude",
+  ".agents",
   ".codex",
   ".git",
   ".github",

@@ -37,19 +37,22 @@ jobs:
       - name: Check and build theme
         run: pnpm lint && pnpm format:check && pnpm build
 
-      - name: Install password authentication helper
-        run: sudo apt-get update && sudo apt-get install --yes sshpass
+      - name: Install SFTP deployment client
+        run: sudo apt-get update && sudo apt-get install --yes lftp
 
       - name: Deploy theme
         env:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          SSHPASS: ${{ secrets.DEPLOY_PASSWORD }}
+          LFTP_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
         run: |
           THEME_SLUG="$(node --input-type=module -e 'import packageJson from "./package.json" with { type: "json" }; console.log(packageJson.name)')"
-          sshpass -e rsync -az --delete-delay --delay-updates \
-            -e "ssh -p $DEPLOY_PORT -o StrictHostKeyChecking=accept-new" \
-            "release/$THEME_SLUG/" \
-            "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+          lftp --env-password -u "$DEPLOY_USER" "sftp://$DEPLOY_HOST:$DEPLOY_PORT" <<EOF
+          set cmd:fail-exit true
+          set sftp:auto-confirm true
+          set mirror:set-permissions false
+          mirror --reverse --delete --verbose "release/$THEME_SLUG/" "$DEPLOY_PATH/"
+          bye
+          EOF
