@@ -8,7 +8,6 @@
     "dev": "vite",
     "host": "vite --host",
     "build": "tsc --noEmit && vite build && node scripts/package-theme.mjs",
-    "preview": "vite preview",
     "lint": "eslint src --max-warnings=0",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
@@ -38,7 +37,6 @@
   },
   "dependencies": {
     "lenis": "^1.3.26",
-    "swiper": "^12.2.0",
     "taos": "^2.0.1"
   }
 }

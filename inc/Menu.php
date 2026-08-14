@@ -20,14 +20,12 @@ final class Menu
     register_nav_menus([
       "header_menu" => "Header menu",
       "footer_menu" => "Footer mobile menu",
-      "footer_locations_menu" => "Footer locations menu",
-      "footer_quick_links_menu" => "Footer quick links menu",
     ]);
   }
 
   public static function footer_link_attributes(array $attributes, $item, $args, int $depth): array
   {
-    if (self::is_footer_location($args->theme_location ?? "")) {
+    if (($args->theme_location ?? "") === "footer_menu") {
       $attributes["class"] = "block py-1 text-sm text-zinc-400 transition-colors duration-300 hover:text-slate-500";
     }
 
@@ -36,15 +34,10 @@ final class Menu
 
   public static function footer_item_attributes(array $attributes, $item, $args, int $depth): array
   {
-    if (self::is_footer_location($args->theme_location ?? "")) {
+    if (($args->theme_location ?? "") === "footer_menu") {
       $attributes["class"] = "leading-none";
     }
 
     return $attributes;
-  }
-
-  private static function is_footer_location(string $location): bool
-  {
-    return in_array($location, ["footer_menu", "footer_locations_menu", "footer_quick_links_menu"], true);
   }
 }

@@ -11,6 +11,7 @@ const ROOT_EXCLUSIONS = new Set([
   ".agents",
   ".codex",
   ".git",
+  ".gitattributes",
   ".github",
   ".idea",
   ".pnpm-store",
