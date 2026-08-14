@@ -53,28 +53,6 @@ function shouldCopy(source) {
   return true;
 }
 
-function themeNameFromArguments(defaultName) {
-  let themeName = defaultName;
-  let hasCustomName = false;
-
-  for (const argument of process.argv.slice(2)) {
-    if (argument === "--") continue;
-
-    if (!argument.startsWith("--") || argument.length === 2) {
-      throw new Error(`Unsupported package argument: ${argument}\nUse --<theme-name>, for example: pnpm build --custom-name`);
-    }
-
-    if (hasCustomName) {
-      throw new Error("Only one custom theme name can be provided.");
-    }
-
-    themeName = argument.slice(2);
-    hasCustomName = true;
-  }
-
-  return themeName;
-}
-
 function validateThemeName(themeName) {
   if (!/^[a-z0-9][a-z0-9._-]*$/.test(themeName) || themeName.endsWith(".") || WINDOWS_RESERVED_NAME.test(themeName)) {
     throw new Error(`Invalid theme name: ${themeName}\nUse a Windows-safe name with lowercase letters, numbers, dots, underscores, and hyphens.`);
@@ -115,13 +93,16 @@ async function copyTheme(themeDirectory) {
 
 async function main() {
   const packageJson = JSON.parse(await readFile(path.join(ROOT_DIR, "package.json"), "utf8"));
-  const defaultThemeName = packageJson.name;
+  const themeName = packageJson.name;
 
-  if (typeof defaultThemeName !== "string" || defaultThemeName === "") {
+  if (typeof themeName !== "string" || themeName === "") {
     throw new Error("The package.json name field must contain a theme name.");
   }
 
-  const themeName = themeNameFromArguments(defaultThemeName);
+  if (process.argv.length > 2) {
+    throw new Error("The build command does not accept arguments. Set the theme name in package.json.");
+  }
+
   validateThemeName(themeName);
 
   const themeDirectory = path.join(RELEASE_DIR, themeName);

@@ -56,14 +56,6 @@ pnpm check
 
 This runs ESLint, checks formatting, checks TypeScript, builds the assets, and recreates the production theme.
 
-To create the release with a custom directory name, pass it as a build argument:
-
-```bash
-pnpm build --custom-name
-```
-
-This creates the production theme at `release/custom-name/`.
-
 ## How it works
 
 WordPress always renders the PHP templates.
