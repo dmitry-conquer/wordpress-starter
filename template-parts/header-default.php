@@ -9,7 +9,7 @@
         "menu_class" => "flex items-center",
         "fallback_cb" => false,
         "depth" => 3,
-        "walker" => new \WP_Theme_Starter\DesktopMenuWalker(),
+        "walker" => new \SiteTheme\DesktopMenuWalker(),
       ]); ?>
     </nav>
 
@@ -85,7 +85,7 @@
         "menu_class" => "w-full",
         "fallback_cb" => false,
         "depth" => 3,
-        "walker" => new \WP_Theme_Starter\MobileMenuWalker(),
+        "walker" => new \SiteTheme\MobileMenuWalker(),
       ]); ?>
     </nav>
 

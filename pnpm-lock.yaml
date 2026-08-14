@@ -39,6 +39,12 @@ importers:
       '@types/alpinejs':
         specifier: ^3.13.11
         version: 3.13.11
+      '@types/alpinejs__collapse':
+        specifier: ^3.13.4
+        version: 3.13.4
+      '@types/alpinejs__focus':
+        specifier: ^3.13.4
+        version: 3.13.4
       alpinejs:
         specifier: ^3.15.12
         version: 3.15.12
@@ -355,6 +361,12 @@ packages:
 
   '@types/alpinejs@3.13.11':
     resolution: {integrity: sha512-3KhGkDixCPiLdL3Z/ok1GxHwLxEWqQOKJccgaQL01wc0EVM2tCTaqlC3NIedmxAXkVzt/V6VTM8qPgnOHKJ1MA==}
+
+  '@types/alpinejs__collapse@3.13.4':
+    resolution: {integrity: sha512-kUBJWEDrHahD2Tb1lrir7iNTGN9ukvoJFjOY41EGC7F21E1KMSch5NrGgE0sqINrRT3lf1UZm3wxB3CNjJHBwg==}
+
+  '@types/alpinejs__focus@3.13.4':
+    resolution: {integrity: sha512-g7pQNxST7palODhfg6DJoKWS59pD8EK1wNjkJydBP2u8LntlO8oD4f2uj6Ywh2CL/olM/bPSyYxwr+WQQPlphg==}
 
   '@types/esrecurse@4.3.1':
     resolution: {integrity: sha512-xJBAbDifo5hpffDBuHl0Y8ywswbiAp/Wi7Y/GtAgSlZyIABppyurxVueOPE8LUQOxdlgi6Zqce7uoEpqNTeiUw==}
@@ -1255,6 +1267,14 @@ snapshots:
       vite: 8.2.1(jiti@2.7.0)
 
   '@types/alpinejs@3.13.11': {}
+
+  '@types/alpinejs__collapse@3.13.4':
+    dependencies:
+      '@types/alpinejs': 3.13.11
+
+  '@types/alpinejs__focus@3.13.4':
+    dependencies:
+      '@types/alpinejs': 3.13.11
 
   '@types/esrecurse@4.3.1': {}
 

@@ -13,6 +13,7 @@ const ROOT_EXCLUSIONS = new Set([
   ".git",
   ".github",
   ".idea",
+  ".pnpm-store",
   ".vscode",
   "node_modules",
   "release",

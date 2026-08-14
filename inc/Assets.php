@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Theme_Starter;
+namespace SiteTheme;
 
 if (!defined("ABSPATH")) {
   exit();
@@ -8,6 +8,8 @@ if (!defined("ABSPATH")) {
 
 final class Assets
 {
+  private const APP_HANDLE = "site-theme-app";
+  private const VITE_CLIENT_HANDLE = "site-theme-vite-client";
   private const ENTRY = "src/scripts/main.ts";
   private const DEFAULT_DEV_SERVER = "http://localhost:5173";
 
@@ -22,8 +24,8 @@ final class Assets
     $dev_server = self::dev_server();
 
     if ($dev_server !== "") {
-      wp_enqueue_script("wp-theme-starter-vite-client", $dev_server . "/@vite/client", [], null, false);
-      wp_enqueue_script("wp-theme-starter-app", $dev_server . "/" . self::ENTRY, [], null, true);
+      wp_enqueue_script(self::VITE_CLIENT_HANDLE, $dev_server . "/@vite/client", [], null, false);
+      wp_enqueue_script(self::APP_HANDLE, $dev_server . "/" . self::ENTRY, [], null, true);
       return;
     }
 
@@ -32,21 +34,24 @@ final class Assets
 
     if (!is_array($entry) || empty($entry["file"])) {
       if (defined("WP_DEBUG") && WP_DEBUG) {
-        trigger_error("WP Theme Starter assets are missing. Run `pnpm build`.", E_USER_WARNING);
+        trigger_error("Theme assets are missing. Run `pnpm build`.", E_USER_WARNING);
       }
       return;
     }
 
+    $theme_uri = get_template_directory_uri();
+    $version = self::theme_version();
+
     foreach ($entry["css"] ?? [] as $index => $css) {
-      wp_enqueue_style("wp-theme-starter-app" . ($index ? "-" . $index : ""), WP_THEME_STARTER_URI . "/assets/build/" . ltrim($css, "/"), [], WP_THEME_STARTER_VERSION);
+      wp_enqueue_style(self::APP_HANDLE . ($index ? "-" . $index : ""), $theme_uri . "/assets/build/" . ltrim($css, "/"), [], $version);
     }
 
-    wp_enqueue_script("wp-theme-starter-app", WP_THEME_STARTER_URI . "/assets/build/" . ltrim($entry["file"], "/"), [], WP_THEME_STARTER_VERSION, true);
+    wp_enqueue_script(self::APP_HANDLE, $theme_uri . "/assets/build/" . ltrim($entry["file"], "/"), [], $version, true);
   }
 
   public static function module_script(string $tag, string $handle, string $src): string
   {
-    if (!in_array($handle, ["wp-theme-starter-vite-client", "wp-theme-starter-app"], true)) {
+    if (!in_array($handle, [self::VITE_CLIENT_HANDLE, self::APP_HANDLE], true)) {
       return $tag;
     }
 
@@ -60,7 +65,8 @@ final class Assets
 
   private static function is_source_theme(): bool
   {
-    return is_readable(WP_THEME_STARTER_DIR . "/package.json") && is_readable(WP_THEME_STARTER_DIR . "/vite.config.js");
+    $theme_directory = get_template_directory();
+    return is_readable($theme_directory . "/package.json") && is_readable($theme_directory . "/vite.config.js");
   }
 
   private static function vite_is_running(): bool
@@ -86,12 +92,17 @@ final class Assets
 
   private static function manifest(): array
   {
-    $path = WP_THEME_STARTER_DIR . "/assets/build/.vite/manifest.json";
+    $path = get_template_directory() . "/assets/build/.vite/manifest.json";
     if (!is_readable($path)) {
       return [];
     }
 
     $manifest = json_decode((string) file_get_contents($path), true);
     return is_array($manifest) ? $manifest : [];
+  }
+
+  private static function theme_version(): string
+  {
+    return wp_get_theme()->get("Version") ?: "1.0.0";
   }
 }

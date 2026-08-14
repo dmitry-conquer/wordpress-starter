@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Theme_Starter;
+namespace SiteTheme;
 
 if (!defined("ABSPATH")) {
   exit();

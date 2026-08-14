@@ -1,6 +1,6 @@
 <?php
 
-namespace WP_Theme_Starter;
+namespace SiteTheme;
 
 if (!defined("ABSPATH")) {
   exit();
@@ -310,6 +310,7 @@ final class DevIndicator
     // These source-only files are not copied into the packaged release theme.
     // Their presence explicitly distinguishes the development starter from a
     // packaged production theme, regardless of WordPress environment settings.
-    return is_readable(WP_THEME_STARTER_DIR . "/package.json") && is_readable(WP_THEME_STARTER_DIR . "/vite.config.js");
+    $theme_directory = get_template_directory();
+    return is_readable($theme_directory . "/package.json") && is_readable($theme_directory . "/vite.config.js");
   }
 }

@@ -1,0 +1,38 @@
+/*
+ * Login page appearance.
+ * To change the logo, replace login-logo.png in this directory.
+ */
+
+:root {
+  --theme-login-background: #f0f0f1;
+  --theme-login-panel: #fff;
+  --theme-login-radius: 12px;
+  --theme-login-shadow: 0 8px 30px rgb(0 0 0 / 8%);
+}
+
+body.login {
+  background: var(--theme-login-background);
+}
+
+.login #login {
+  width: 360px;
+  max-width: calc(100% - 32px);
+  padding-top: 6vh;
+}
+
+.login .wp-login-logo a {
+  width: 84px;
+  height: 84px;
+  margin-bottom: 24px;
+  background-image: var(--theme-login-logo);
+  background-position: center;
+  background-size: contain;
+}
+
+.login form {
+  margin-top: 0;
+  border: 0;
+  border-radius: var(--theme-login-radius);
+  background: var(--theme-login-panel);
+  box-shadow: var(--theme-login-shadow);
+}

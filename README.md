@@ -1,6 +1,6 @@
-# WP Theme Starter
+# Site Theme
 
-WordPress starter theme with Vite, Tailwind CSS, TypeScript and Alpine.js.
+Custom WordPress theme with Vite, Tailwind CSS, TypeScript and Alpine.js.
 
 ## Start development
 
@@ -8,18 +8,6 @@ Install dependencies:
 
 ```bash
 pnpm install
-```
-
-Rename the starter before development. Enter a theme name of up to 80 Latin letters with single spaces, for example `Awesome Theme`. The script derives `awesome-theme`, `Awesome_Theme`, and `AWESOME_THEME`, then updates only its explicit file allowlist:
-
-```bash
-pnpm rename-theme
-```
-
-To preview the files it would update without changing anything:
-
-```bash
-pnpm rename-theme -- --dry-run
 ```
 
 Start Vite and open the WordPress site:
@@ -43,7 +31,7 @@ pnpm build
 This checks TypeScript, builds production CSS and JavaScript, and creates the ready-to-use WordPress theme at:
 
 ```text
-release/wordpress-starter/
+release/site-theme/
 ```
 
 All working source files remain in the project root. The complete production theme that can be installed or deployed is generated in the `release/` directory. Its default directory name comes from the `name` field in `package.json`.
@@ -66,7 +54,7 @@ During development, `pnpm dev` starts Vite on `http://localhost:5173`. When the 
 
 For a non-default Vite address, update the URL in `inc/Assets.php` and the Vite `server` settings in `vite.config.js`.
 
-For production, run `pnpm build`. Vite compiles the assets into `assets/build/`, and WordPress loads the generated CSS and JavaScript through the Vite manifest. The ready-to-use theme in `release/wordpress-starter/` does not contain the source-only Vite files, so it always uses the production build.
+For production, run `pnpm build`. Vite compiles the assets into `assets/build/`, and WordPress loads the generated CSS and JavaScript through the Vite manifest. The ready-to-use theme in `release/site-theme/` does not contain the source-only Vite files, so it always uses the production build.
 
 ## Production deployment
 
@@ -75,7 +63,7 @@ Production deployments run automatically in GitHub Actions after every push to `
 The workflow checks the code, runs `pnpm build`, then synchronizes only the generated theme directory:
 
 ```text
-release/<theme-slug>/ → wp-content/themes/<theme-slug>/
+release/site-theme/ → DEPLOY_PATH
 ```
 
 It does not modify WordPress core, plugins, uploads, the database, or other themes. Files inside the deployed theme directory must not be edited manually: the next deployment makes that directory match the current `main` commit.
@@ -86,7 +74,7 @@ Create a `production` environment in the repository settings, then add these Act
 
 ```text
 DEPLOY_HOST      Server hostname or IP address
-DEPLOY_PORT      SSH port, usually 22
+DEPLOY_PORT      SSH port, usually 2222
 DEPLOY_USER      SSH username
 DEPLOY_PASSWORD  SSH password
 ```

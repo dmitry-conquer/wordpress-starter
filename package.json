@@ -1,11 +1,10 @@
 {
-  "name": "wordpress-starter",
-  "description": "Modern starter kit with Vite, Tailwind CSS v4, Alpine.js and TypeScript. WordPress theme starter template.",
+  "name": "site-theme",
+  "description": "Custom WordPress theme with Vite, Tailwind CSS v4, Alpine.js and TypeScript.",
   "packageManager": "pnpm@11.10.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "rename-theme": "node scripts/rename-theme.mjs",
     "dev": "vite",
     "host": "vite --host",
     "build": "tsc --noEmit && vite build && node scripts/package-theme.mjs",
@@ -24,6 +23,8 @@
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@types/alpinejs": "^3.13.11",
+    "@types/alpinejs__collapse": "^3.13.4",
+    "@types/alpinejs__focus": "^3.13.4",
     "alpinejs": "^3.15.12",
     "eslint": "^10.8.0",
     "globals": "^17.9.0",
