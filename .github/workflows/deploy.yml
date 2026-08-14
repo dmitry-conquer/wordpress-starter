@@ -48,7 +48,56 @@ jobs:
           LFTP_PASSWORD: ${{ secrets.DEPLOY_PASSWORD }}
           DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
         run: |
+          set -euo pipefail
+
           THEME_SLUG="$(node --input-type=module -e 'import packageJson from "./package.json" with { type: "json" }; console.log(packageJson.name)')"
+
+          for VARIABLE in DEPLOY_HOST DEPLOY_PORT DEPLOY_USER LFTP_PASSWORD DEPLOY_PATH; do
+            if [[ -z "${!VARIABLE:-}" ]]; then
+              echo "::error::${VARIABLE} is not configured."
+              exit 1
+            fi
+          done
+
+          if [[ ! "$DEPLOY_PORT" =~ ^[0-9]+$ ]] || (( 10#$DEPLOY_PORT < 1 || 10#$DEPLOY_PORT > 65535 )); then
+            echo "::error::DEPLOY_PORT must be a number between 1 and 65535."
+            exit 1
+          fi
+
+          DEPLOY_PATH="${DEPLOY_PATH%/}"
+          REMOTE_THEME_DIRECTORY="${DEPLOY_PATH##*/}"
+          REMOTE_THEME_PARENT="${DEPLOY_PATH%/*}"
+
+          if [[ "$DEPLOY_PATH" != /* ]] || [[ "$REMOTE_THEME_PARENT" != */wp-content/themes ]]; then
+            echo "::error::DEPLOY_PATH must be an absolute path to a directory inside wp-content/themes."
+            exit 1
+          fi
+
+          if [[ ! "$REMOTE_THEME_DIRECTORY" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]*$ ]] || [[ "$REMOTE_THEME_DIRECTORY" == "." || "$REMOTE_THEME_DIRECTORY" == ".." ]]; then
+            echo "::error::DEPLOY_PATH must end with a safe theme directory name."
+            exit 1
+          fi
+
+          if [[ "$DEPLOY_PATH" == *"/../"* || "$DEPLOY_PATH" == *"/./"* ]]; then
+            echo "::error::DEPLOY_PATH must not contain relative path segments."
+            exit 1
+          fi
+
+          THEME_DIRECTORY="release/$THEME_SLUG"
+          REQUIRED_FILES=(
+            "style.css"
+            "index.php"
+            "functions.php"
+            "assets/build/.vite/manifest.json"
+          )
+
+          for FILE in "${REQUIRED_FILES[@]}"; do
+            if [[ ! -s "$THEME_DIRECTORY/$FILE" ]]; then
+              echo "::error::Production theme is missing required file: $FILE"
+              exit 1
+            fi
+          done
+
           lftp --env-password -u "$DEPLOY_USER" "sftp://$DEPLOY_HOST:$DEPLOY_PORT" <<EOF
           set cmd:fail-exit true
           set sftp:auto-confirm true
