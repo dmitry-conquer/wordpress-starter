@@ -18,7 +18,6 @@
     "@alpinejs/collapse": "^3.16.1",
     "@alpinejs/focus": "^3.16.1",
     "@eslint/js": "^10.0.1",
-    "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@types/alpinejs": "^3.13.11",

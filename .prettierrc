@@ -12,6 +12,6 @@
   "jsxSingleQuote": false,
   "quoteProps": "as-needed",
   "semi": true,
-  "plugins": ["@prettier/plugin-php", "prettier-plugin-tailwindcss"],
+  "plugins": ["prettier-plugin-tailwindcss"],
   "tailwindStylesheet": "./src/styles/main.css"
 }
