@@ -41,6 +41,6 @@ Shortcodes::register();
 Utils::register();
 
 // Show the development status indicator only in the source theme.
-if (is_readable(get_template_directory() . "/package.json") && is_readable(get_template_directory() . "/vite.config.js")) {
+if (Assets::is_source_theme()) {
   DevIndicator::register();
 }

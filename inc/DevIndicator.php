@@ -8,8 +8,6 @@ if (!defined("ABSPATH")) {
 
 final class DevIndicator
 {
-  private const DEFAULT_DEV_SERVER = "http://localhost:5173";
-
   public static function register(): void
   {
     add_action("wp_footer", [self::class, "render"], PHP_INT_MAX);
@@ -21,7 +19,7 @@ final class DevIndicator
       return;
     }
 
-    $dev_server = Assets::dev_server() ?: self::DEFAULT_DEV_SERVER;
+    $dev_server = Assets::dev_server() ?: Assets::DEV_SERVER;
     ?>
     <style>
       #theme-dev-indicator {
@@ -307,10 +305,6 @@ final class DevIndicator
       return false;
     }
 
-    // These source-only files are not copied into the packaged release theme.
-    // Their presence explicitly distinguishes the development starter from a
-    // packaged production theme, regardless of WordPress environment settings.
-    $theme_directory = get_template_directory();
-    return is_readable($theme_directory . "/package.json") && is_readable($theme_directory . "/vite.config.js");
+    return Assets::is_source_theme();
   }
 }

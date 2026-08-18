@@ -8,15 +8,15 @@ if (!defined("ABSPATH")) {
 
 final class Assets
 {
+  public const DEV_SERVER = "http://localhost:5173";
+
   private const APP_HANDLE = "site-theme-app";
   private const VITE_CLIENT_HANDLE = "site-theme-vite-client";
   private const ENTRY = "src/scripts/main.ts";
-  private const DEFAULT_DEV_SERVER = "http://localhost:5173";
 
   public static function register(): void
   {
     add_action("wp_enqueue_scripts", [self::class, "enqueue_assets"]);
-    add_filter("script_loader_tag", [self::class, "module_script"], 10, 3);
   }
 
   public static function enqueue_assets(): void
@@ -24,8 +24,8 @@ final class Assets
     $dev_server = self::dev_server();
 
     if ($dev_server !== "") {
-      wp_enqueue_script(self::VITE_CLIENT_HANDLE, $dev_server . "/@vite/client", [], null, false);
-      wp_enqueue_script(self::APP_HANDLE, $dev_server . "/" . self::ENTRY, [], null, true);
+      wp_enqueue_script_module(self::VITE_CLIENT_HANDLE, $dev_server . "/@vite/client", [], null);
+      wp_enqueue_script_module(self::APP_HANDLE, $dev_server . "/" . self::ENTRY, [], null);
       return;
     }
 
@@ -40,30 +40,20 @@ final class Assets
     }
 
     $theme_uri = get_template_directory_uri();
-    $version = self::theme_version();
 
     foreach ($entry["css"] ?? [] as $index => $css) {
-      wp_enqueue_style(self::APP_HANDLE . ($index ? "-" . $index : ""), $theme_uri . "/assets/build/" . ltrim($css, "/"), [], $version);
+      wp_enqueue_style(self::APP_HANDLE . ($index ? "-" . $index : ""), $theme_uri . "/assets/build/" . ltrim($css, "/"), [], null);
     }
 
-    wp_enqueue_script(self::APP_HANDLE, $theme_uri . "/assets/build/" . ltrim($entry["file"], "/"), [], $version, true);
-  }
-
-  public static function module_script(string $tag, string $handle, string $src): string
-  {
-    if (!in_array($handle, [self::VITE_CLIENT_HANDLE, self::APP_HANDLE], true)) {
-      return $tag;
-    }
-
-    return sprintf('<script type="module" src="%s"></script>' . "\n", esc_url($src));
+    wp_enqueue_script_module(self::APP_HANDLE, $theme_uri . "/assets/build/" . ltrim($entry["file"], "/"), [], null);
   }
 
   public static function dev_server(): string
   {
-    return self::is_source_theme() && self::vite_is_running() ? self::DEFAULT_DEV_SERVER : "";
+    return self::is_source_theme() && self::vite_is_running() ? self::DEV_SERVER : "";
   }
 
-  private static function is_source_theme(): bool
+  public static function is_source_theme(): bool
   {
     $theme_directory = get_template_directory();
     return is_readable($theme_directory . "/package.json") && is_readable($theme_directory . "/vite.config.js");
@@ -77,7 +67,7 @@ final class Assets
       return $running;
     }
 
-    $response = wp_remote_get(self::DEFAULT_DEV_SERVER . "/__theme-dev-status", [
+    $response = wp_remote_get(self::DEV_SERVER . "/__theme-dev-status", [
       "timeout" => 0.5,
       "redirection" => 0,
     ]);
@@ -99,10 +89,5 @@ final class Assets
 
     $manifest = json_decode((string) file_get_contents($path), true);
     return is_array($manifest) ? $manifest : [];
-  }
-
-  private static function theme_version(): string
-  {
-    return wp_get_theme()->get("Version") ?: "1.0.0";
   }
 }

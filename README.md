@@ -4,7 +4,7 @@ Custom WordPress theme with Vite, Tailwind CSS, TypeScript and Alpine.js.
 
 ## Requirements
 
-- A working WordPress installation
+- A working WordPress 6.5 or newer installation
 - PHP 8.2 or newer
 - Node.js 22
 - pnpm 11.10.0
