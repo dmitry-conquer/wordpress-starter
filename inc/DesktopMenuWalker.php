@@ -8,15 +8,13 @@ if (!defined("ABSPATH")) {
 
 final class DesktopMenuWalker extends \Walker_Nav_Menu
 {
-  private const ROW_D0 = "flex items-center";
   private const ROW_D1 = "flex items-center transition-colors hover:bg-stone-50";
   private const LINK_D0 = "flex items-center px-4 py-2 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
   private const LINK_D0_ACTIVE = "flex items-center px-4 py-2 text-sm font-medium text-stone-900 transition-colors hover:text-stone-600 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
-  private const LINK_D0_PARENT = "flex min-w-0 flex-1 items-center py-2 pl-4 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
   private const LINK_D1 = "flex items-center px-4 py-2.5 text-sm text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
   private const LINK_D1_ACTIVE = "relative flex items-center px-4 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
   private const LINK_D1_PARENT = "flex min-w-0 flex-1 items-center py-2.5 pl-4 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
-  private const BUTTON_D0 = "mr-1 flex size-8 shrink-0 items-center justify-center rounded-lg text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
+  private const BUTTON_D0 = "flex items-center gap-1 px-4 py-2 text-sm text-stone-600 transition-colors hover:text-stone-900 focus-visible:rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500";
   private const BUTTON_D1 = "mr-1 flex size-8 shrink-0 items-center justify-center text-stone-400 transition-colors hover:text-stone-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-inset";
   private const ACTIVE_BAR_D1 = "absolute top-1/2 left-0 h-4 w-0.5 -translate-y-1/2 rounded-r bg-amber-500";
   private const CHEVRON_DOWN = "h-4 w-4 shrink-0 transition-transform duration-200";
@@ -54,11 +52,14 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
 
     if ($has_children) {
       $this->submenu_id = "desktop-submenu-" . (int) $item->ID;
-      $row_class = $depth === 0 ? self::ROW_D0 : self::ROW_D1;
-      $link_class = $depth === 0 ? self::LINK_D0_PARENT : self::LINK_D1_PARENT;
 
-      $output .= '<div class="' . esc_attr($row_class) . "\">\n";
-      $output .= $this->link($item, $title, $link_class, $current);
+      if ($depth === 0) {
+        $output .= $this->toggle_button($title, $this->submenu_id, $depth);
+        return;
+      }
+
+      $output .= '<div class="' . esc_attr(self::ROW_D1) . "\">\n";
+      $output .= $this->link($item, $title, self::LINK_D1_PARENT, $current);
       $output .= $this->toggle_button($title, $this->submenu_id, $depth);
       $output .= "</div>\n";
       return;
@@ -120,14 +121,17 @@ final class DesktopMenuWalker extends \Walker_Nav_Menu
   {
     $class = $depth === 0 ? self::BUTTON_D0 : self::BUTTON_D1;
     $icon = $depth === 0 ? $this->chevron_down() : $this->chevron_right();
+    $label = $depth === 0 ? esc_html($title) : "";
+    $aria_label = $depth === 0 ? "" : ' aria-label="' . esc_attr(sprintf("Toggle %s submenu", $title)) . '"';
 
     return '<button x-ref="toggle" type="button" class="' .
       esc_attr($class) .
       '" :aria-expanded="open.toString()" aria-controls="' .
       esc_attr($controls) .
-      '" aria-label="' .
-      esc_attr(sprintf("Toggle %s submenu", $title)) .
-      '" @click="open = !open">' .
+      '"' .
+      $aria_label .
+      ' @click="open = !open">' .
+      $label .
       $icon .
       "</button>\n";
   }
