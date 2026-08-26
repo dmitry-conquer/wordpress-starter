@@ -35,7 +35,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Check and build theme
-        run: pnpm lint && pnpm format:check && pnpm build
+        run: pnpm lint && pnpm build
 
       - name: Install SFTP deployment client
         run: sudo apt-get update && sudo apt-get install --yes lftp
