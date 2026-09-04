@@ -45,8 +45,10 @@ const wordpressNotice = {
 };
 
 export default defineConfig({
+  base: "./",
   plugins: [tailwindcss(), FullReload(["*.php", "inc/**/*.php", "template-parts/**/*.php", "templates/**/*.php", "acf-json/**/*.json"]), wordpressNotice],
   server: {
+    origin: "http://localhost:5173",
     host: "0.0.0.0",
     port: 5173,
     strictPort: true,

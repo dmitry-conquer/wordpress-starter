@@ -11,6 +11,17 @@
 @source "../scripts/**/*.ts";
 
 /*
+ * Local Fonts
+ */
+/* @font-face {
+  font-family: "[Font Name]";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/[font-name].woff2") format("woff2");
+} */
+
+/*
  * Alpine.js x-cloak directive
  * Hides elements until Alpine.js initializes
  */
