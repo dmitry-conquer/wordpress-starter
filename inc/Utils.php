@@ -25,6 +25,15 @@ final class Utils
     return sprintf('style="%s"', esc_attr(sprintf("background-image:url('%s')", esc_url($url))));
   }
 
+  public static function icon(string $name, string $class = "size-6"): string
+  {
+    if (!in_array($name, ["phone", "chevron", "arrow-up-right", "arrow-right", "menu", "plus", "minus", "home", "shield-tick", "check-circle", "pin", "shield-tick-small", "star"], true)) {
+      return "";
+    }
+    $url = get_template_directory_uri() . "/assets/icons/" . $name . ".svg";
+    return sprintf('<span aria-hidden="true" class="inline-block shrink-0 bg-current %s" style="mask: url(%s) center / contain no-repeat"></span>', esc_attr($class), esc_url($url));
+  }
+
   public static function asterisk_to_span($text)
   {
     if (empty($text) || !is_string($text)) {
